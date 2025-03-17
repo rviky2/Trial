@@ -6,6 +6,10 @@ def question_paper_upload_path(instance, filename):
     # Upload question papers to department/subject directory
     return f'question_papers/{instance.subject.department.slug}/{instance.subject.slug}/{filename}'
 
+def get_default_semester():
+    """Return default semester (first semester)"""
+    return 1
+
 class Department(models.Model):
     name = models.CharField(max_length=100, unique=True)
     slug = models.SlugField(max_length=100, unique=True, blank=True)
