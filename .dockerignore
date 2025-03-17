@@ -1,0 +1,28 @@
+# Git
+.git
+.gitignore
+
+# Virtual environment
+venv/
+env/
+*.pyc
+__pycache__/
+
+# Local development
+.env
+.env.azure
+db.sqlite3
+media/
+staticfiles/
+
+# Azure deployment specific files
+azure-deploy.zip
+.github/
+
+# Editor files
+.vscode/
+.idea/
+
+# Docker
+Dockerfile
+.dockerignore 

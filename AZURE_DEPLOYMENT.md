@@ -9,35 +9,41 @@ This is a step-by-step guide to deploy your Django Question Paper Management Sys
 1. **Resource Group**:
    - Create a new resource group (e.g., `qp-resource-group`)
 
-2. **PostgreSQL Flexible Server**:
+2. **Container Registry**:
+   - Create an Azure Container Registry
+   - Name: (your choice, e.g., `qpregistry`)
+   - SKU: Basic
+   - Save the login server, username, and password
+
+3. **PostgreSQL Flexible Server**:
    - Create a new PostgreSQL Flexible Server
    - Name: `qp-postgres` (your choice)
    - Admin username: (your choice, e.g., `dbadmin`)
    - Password: (create a strong password)
    - Save these credentials
 
-3. **Create a Database**:
+4. **Create a Database**:
    - Go to your PostgreSQL server
    - Create a new database (e.g., `qpdb`)
 
-4. **Storage Account**:
+5. **Storage Account**:
    - Create a new Storage Account (must be globally unique)
    - Name: (your choice, e.g., `qpstorage`)
    - Performance: Standard
    - Redundancy: Locally redundant (LRS)
 
-5. **Storage Container**:
+6. **Storage Container**:
    - Go to your Storage Account
    - Create a new container named `media`
    - Set public access level to "Blob"
 
-6. **App Service Plan**:
+7. **App Service Plan**:
    - Create a new App Service Plan
    - Name: (your choice, e.g., `qp-appplan`)
    - OS: Linux
    - Pricing plan: Basic B1 (minimum recommended)
 
-7. **Web App**:
+8. **Web App**:
    - Create a new Web App
    - Name: (your choice, e.g., `sit-qp-management`)
    - Runtime stack: Python 3.9
@@ -78,6 +84,9 @@ DJANGO_SUPERUSER_PASSWORD=<admin-password>
      - `SECRET_KEY`: Your Django secret key
      - `AZURE_WEBAPP_NAME`: Your Azure Web App name
      - `AZURE_WEBAPP_PUBLISH_PROFILE`: (paste your publish profile from Azure)
+     - `REGISTRY_LOGIN_SERVER`: (e.g., qpregistry.azurecr.io)
+     - `REGISTRY_USERNAME`: (from Container Registry Access keys)
+     - `REGISTRY_PASSWORD`: (from Container Registry Access keys)
 
 ## Step 4: Get Publish Profile from Azure
 
@@ -115,4 +124,36 @@ To view logs, go to your Web App in Azure Portal:
 - Navigate to "Monitoring" > "Log stream"
 
 To connect to SSH console:
-- Navigate to "Development Tools" > "SSH" 
+- Navigate to "Development Tools" > "SSH"
+
+## Docker Container Deployment
+
+The application now uses Docker containers for deployment, which offers several advantages:
+
+1. **Consistency**: The same environment is used across development and production
+2. **Isolation**: Dependencies are isolated from the host system
+3. **Scalability**: Container instances can be easily scaled up or down
+
+### Local Docker Testing
+
+You can test the container locally before deployment:
+
+```bash
+# Build the image
+docker build -t qp-app:latest .
+
+# Run the container
+docker run -p 8000:8000 -e SECRET_KEY=your-secret-key qp-app:latest
+```
+
+### Container Configuration in Azure
+
+When deploying to Azure App Service, make sure to:
+
+1. Select **Docker Container** as the publish option
+2. Choose **Linux** as the operating system
+3. In the Docker tab, select:
+   - Image Source: **Azure Container Registry**
+   - Registry: (your ACR name)
+   - Image: qp-app
+   - Tag: latest (or your specific tag) 
